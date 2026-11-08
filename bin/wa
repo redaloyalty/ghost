@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Super+Shift+v: newest recording -> WhatsApp-ready copy (720p H.264 + AAC, small, plays everywhere).
+# Opens the folder with it selected - drag it into WhatsApp.
+src=$(ls -t ~/Videos/LL/*.mp4 ~/Videos/LL/*.mkv ~/Videos/Recordings/*.mp4 2>/dev/null | grep -v '\-wa\.mp4$' | head -1)
+[ -z "$src" ] && { notify-send "whatsapp" "no recording found"; exit 0; }
+out="${src%.*}-wa.mp4"
+notify-send "whatsapp" "making a WhatsApp copy of $(basename "$src")..."
+ffmpeg -hide_banner -loglevel error -y -i "$src" -vf "scale=-2:720,fps=30" -c:v libx264 -preset veryfast -crf 28 \
+  -profile:v main -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart "$out" || { notify-send -u critical "whatsapp" "convert failed"; exit 1; }
+mb=$(( $(stat -c %s "$out") / 1048576 ))
+notify-send "whatsapp ready" "$(basename "$out") - ${mb} MB - drag it into WhatsApp"
+nautilus --select "$out" >/dev/null 2>&1 &

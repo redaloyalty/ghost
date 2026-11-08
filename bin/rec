@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Super+Shift+r: start / stop recording the screen you're on, with mic + computer sound.
+# Hardware encoding on the Intel GPU (VAAPI), falls back to x264. Saves to ~/Videos/Recordings.
+dir=~/Videos/Recordings; pidf=/tmp/ghost-rec.pid; mkdir -p "$dir"
+if [ -f "$pidf" ] && kill -0 "$(cat "$pidf")" 2>/dev/null; then
+  kill -INT "$(cat "$pidf")"; rm -f "$pidf"
+  notify-send "recording saved" "$(ls -t "$dir" | head -1)"; exit 0
+fi
+# geometry of the focused screen
+o=$(i3-msg -t get_workspaces | jq -r '.[] | select(.focused) | .output')
+read -r w h x y < <(i3-msg -t get_outputs | jq -r --arg o "$o" '.[] | select(.name==$o) | .rect | "\(.width) \(.height) \(.x) \(.y)"')
+sink=$(wpctl inspect @DEFAULT_AUDIO_SINK@ | sed -n 's/.*node.name = "\(.*\)"/\1/p')
+mic=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ | sed -n 's/.*node.name = "\(.*\)"/\1/p')
+out="$dir/$(date +%Y-%m-%d_%H-%M-%S).mp4"
+audio=(-f pulse -i "$mic" -f pulse -i "$sink.monitor" -filter_complex "[1:a][2:a]amix=inputs=2:duration=longest[a]" -map 0:v -map "[a]" -c:a aac -b:a 160k)
+if ffmpeg -hide_banner -loglevel error -init_hw_device vaapi=g:/dev/dri/renderD128 -f lavfi -i nullsrc=s=64x64 -frames:v 1 \
+     -vf format=nv12,hwupload -c:v h264_vaapi -f null - 2>/dev/null; then
+  video=(-vaapi_device /dev/dri/renderD128 -vf "format=nv12,hwupload" -c:v h264_vaapi -qp 24)
+else
+  video=(-c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p)
+fi
+ffmpeg -hide_banner -loglevel error -f x11grab -framerate 30 -video_size "${w}x${h}" -i ":0.0+${x},${y}" \
+  "${audio[@]}" "${video[@]}" -movflags +faststart "$out" >/tmp/ghost-rec.log 2>&1 &
+echo $! > "$pidf"
+notify-send "recording" "Super+Shift+r to stop"

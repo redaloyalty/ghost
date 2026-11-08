@@ -61,10 +61,17 @@ SOUND
   bar VOL: right click  mute on/off      scroll = volume
   volume and brightness keys on the keyboard work too
 
+RECORD  (saved in ~/Videos/Recordings)
+  Super + Shift + r      start / stop recording the screen you're on (mic + computer sound)
+                         red  ● REC  on the bar while it runs - click it to stop
+  Super + Shift + o      OBS for LL feature videos: Chrome window only, 1080p60,
+                         saved in ~/Videos/LL, notifications muted while open
+  Super + Shift + v      newest recording -> WhatsApp-ready copy (720p, small), folder opens to drag it
+
 SESSION
   Super + Escape         lock
   Super + Shift + e      menu: lock, log out, suspend, restart, shut down
-  Super + Shift + c      reload config      Super + Shift + r   restart i3 (windows stay)
+  Super + Shift + c      reload config      Super + Ctrl + r    restart i3 (windows stay)
 
 LOST?
   Super + Shift + e  then  log out  ->  at login click the gear  ->  pick Ubuntu
