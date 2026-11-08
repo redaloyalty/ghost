@@ -25,6 +25,7 @@ exec_always --no-startup-id sh -c 'pkill -x picom; sleep 0.5; picom -b'
 exec_always --no-startup-id ~/dotfiles/polybar/launch.sh
 exec --no-startup-id dunst
 exec --no-startup-id nm-applet
+exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/dotfiles/bin/lock
 exec --no-startup-id ~/dotfiles/bin/first-run
 
