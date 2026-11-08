@@ -11,6 +11,7 @@ OPEN THINGS
   Super + a              Claude Code (terminal in ~/ll)
   Super + e              ranger (files in terminal)
   Super + n              Files (normal file manager)
+  Super + g              repos: Enter VS Code, Alt+t terminal, Alt+g GitHub
   Super + Shift + w      WhatsApp (laptop screen, workspace 6)
   Super + Shift + t      Teams (laptop screen, workspace 6)
 

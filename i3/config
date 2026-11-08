@@ -71,6 +71,7 @@ bindsym $mod+m exec kitty --class mind-float --title mind -e mind chat
 bindsym $mod+slash exec ~/dotfiles/bin/keys
 bindsym $mod+b exec google-chrome
 bindsym $mod+Shift+b exec firefox
+bindsym $mod+g exec --no-startup-id sh -c 'command -v repo-pick >/dev/null && exec repo-pick'
 bindsym $mod+Shift+w exec google-chrome --app=https://web.whatsapp.com
 bindsym $mod+Shift+t exec google-chrome --app=https://teams.microsoft.com
 bindsym $mod+c exec code
