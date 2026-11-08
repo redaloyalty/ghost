@@ -51,6 +51,9 @@ workspace $ws8 output eDP-1
 workspace $ws9 output eDP-1
 workspace $ws10 output eDP-1
 
+# chat apps first (more specific), they live on the laptop screen
+assign [instance="web.whatsapp.com"] $ws6
+assign [instance="teams.microsoft.com"] $ws6
 assign [class="(?i)google-chrome|firefox|brave"] $ws2
 assign [class="(?i)code"] $ws3
 assign [class="(?i)obsidian"] $ws4
@@ -68,6 +71,8 @@ bindsym $mod+m exec kitty --class mind-float --title mind -e mind chat
 bindsym $mod+slash exec ~/dotfiles/bin/keys
 bindsym $mod+b exec google-chrome
 bindsym $mod+Shift+b exec firefox
+bindsym $mod+Shift+w exec google-chrome --app=https://web.whatsapp.com
+bindsym $mod+Shift+t exec google-chrome --app=https://teams.microsoft.com
 bindsym $mod+c exec code
 bindsym $mod+o exec obsidian
 bindsym $mod+a exec kitty --directory ~/ll --title claude -e claude

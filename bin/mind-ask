@@ -1,4 +1,6 @@
 #!/bin/sh
+# if the private clipboard-actions menu is installed, use it
+command -v mind-act >/dev/null && exec mind-act
 q=$(rofi -dmenu -p "󰧑 ask mind" -theme-str 'listview{lines:0;} entry{placeholder:"question for the laptop llm";}' < /dev/null)
 [ -z "$q" ] && exit 0
 kitty --class mind-float --title "mind: $q" -e sh -c 'printf "\033[38;2;143;191;143m> %s\033[0m\n\n" "$1"; mind ask "$1"; printf "\n\033[2m(enter to close)\033[0m"; read -r _' sh "$q"
