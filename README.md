@@ -14,7 +14,7 @@ My i3 setup on Ubuntu 24.04. Black and grey with one green accent, borrowed from
 | Compositor | picom: blur, shadows, rounded corners, fades |
 | Launcher, window switcher, power menu | rofi |
 | Notifications | dunst |
-| Lock screen | i3lock with a blurred copy of the wallpaper |
+| Lock screen | i3lock-color (falls back to i3lock): blurred wallpaper, clock, a ring that turns green as you type and red when wrong |
 | System card | `bin/ghostfetch` |
 | Font | JetBrainsMono Nerd Font |
 

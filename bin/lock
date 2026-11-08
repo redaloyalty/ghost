@@ -1,3 +1,22 @@
 #!/bin/sh
-# blurred wallpaper, tiled = one copy per 1920x1080 screen
-i3lock -n -t -e -f -i ~/dotfiles/wallpaper/lock.png -c 0a0a0a
+# Ghost lock: blurred wallpaper, HUD clock, green ring while typing, red when wrong.
+# Uses i3lock-color if built (~/.local/bin/i3lock-color), else plain i3lock.
+img=~/dotfiles/wallpaper/lock.png
+if command -v i3lock-color >/dev/null; then
+  F="JetBrainsMono Nerd Font"
+  exec i3lock-color -n -e -f -t -i "$img" -c 0a0a0aff \
+    --clock --force-clock --time-str="%H:%M" --date-str="%A %d %b" \
+    --time-font="$F" --date-font="$F" --greeter-font="$F" --verif-font="$F" --wrong-font="$F" --layout-font="$F" \
+    --time-size=96 --date-size=18 --greeter-size=13 \
+    --time-color=d6d3cbff --date-color=7d8079ff --greeter-color=8fbf8fff \
+    --time-pos="x+120:y+h-170" --date-pos="tx+4:ty+40" --greeter-pos="tx+6:ty-110" --greeter-text="LOCKED" \
+    --time-align=1 --date-align=1 --greeter-align=1 \
+    --ind-pos="x+w-150:y+h-150" --radius=46 --ring-width=4 \
+    --inside-color=0a0a0a99 --ring-color=2a2f2aff --line-uses-inside \
+    --keyhl-color=8fbf8fff --bshl-color=c2564aff --separator-color=00000000 \
+    --insidever-color=0a0a0acc --ringver-color=b6e3a8ff --verif-color=b6e3a8ff --verif-text="CHECK" \
+    --insidewrong-color=0a0a0acc --ringwrong-color=c2564aff --wrong-color=c2564aff --wrong-text="NO" \
+    --noinput-text="" --modif-color=7d8079ff --verif-size=11 --wrong-size=11 \
+    --pass-media-keys --pass-volume-keys
+fi
+exec i3lock -n -t -e -f -i "$img" -c 0a0a0a
