@@ -49,7 +49,7 @@ WORKSPACES
   Super + 6..0           laptop screen
   Super + Shift + 1..0   send window to workspace
   Super + ,              send the whole workspace to the other screen
-  Chrome goes to 2, VS Code to 3, Obsidian to 4, WhatsApp + Teams to 6 by itself
+  Chrome goes to 2, VS Code to 3, WhatsApp + Teams to 6 by itself; Obsidian opens where you are
 
 SCREENSHOTS  (saved in ~/Pictures/Screenshots)
   Print                  whole screen (both screens)

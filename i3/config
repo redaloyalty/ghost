@@ -56,7 +56,6 @@ assign [instance="web.whatsapp.com"] $ws6
 assign [instance="teams.microsoft.com"] $ws6
 assign [class="(?i)google-chrome|firefox|brave"] $ws2
 assign [class="(?i)code"] $ws3
-assign [class="(?i)obsidian"] $ws4
 for_window [class="mind-float"] floating enable, resize set 900 600, move position center
 for_window [class="keys-float"] floating enable, resize set 820 760, move position center
 for_window [window_role="pop-up"] floating enable
