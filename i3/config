@@ -18,8 +18,10 @@ client.urgent           #c2564a #0a0a0a #d6d3cb #c2564a   #c2564a
 client.background       #0a0a0a
 
 # startup
+# big screen (DP-2) physically on the left; X11 puts it right by default
+exec_always --no-startup-id ~/dotfiles/bin/screens
 exec_always --no-startup-id ~/dotfiles/bin/wall
-exec_always --no-startup-id pkill -x picom; exec_always --no-startup-id picom -b
+exec_always --no-startup-id sh -c 'pkill -x picom; sleep 0.5; picom -b'
 exec_always --no-startup-id ~/dotfiles/polybar/launch.sh
 exec --no-startup-id dunst
 exec --no-startup-id nm-applet
@@ -27,11 +29,11 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/dotfiles/bin/lock
 exec --no-startup-id ~/dotfiles/bin/first-run
 
 # workspaces: 1-5 on the big screen, 6-10 on the laptop
-set $ws1 "1:term"
-set $ws2 "2:web"
-set $ws3 "3:code"
-set $ws4 "4:notes"
-set $ws5 "5:mind"
+set $ws1 "1:TERM"
+set $ws2 "2:WEB"
+set $ws3 "3:CODE"
+set $ws4 "4:NOTES"
+set $ws5 "5:MIND"
 set $ws6 "6"
 set $ws7 "7"
 set $ws8 "8"
