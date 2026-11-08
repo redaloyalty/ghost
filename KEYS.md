@@ -62,10 +62,12 @@ SOUND
   volume and brightness keys on the keyboard work too
 
 RECORD  (saved in ~/Videos/Recordings)
-  Super + Shift + r      start / stop recording the screen you're on (mic + computer sound)
+  Super + Shift + r      start: pick mic + sound / mic only / sound only / no audio (last choice on top)
+                         press again to stop. Records the screen you're on
                          red  ● REC  on the bar while it runs - click it to stop
   Super + Shift + o      OBS for LL feature videos: Chrome window only, 1080p60,
                          saved in ~/Videos/LL, notifications muted while open
+                         mic / computer sound on-off: speaker icons in OBS's Audio Mixer
   Super + Shift + v      newest recording -> WhatsApp-ready copy (720p, small), folder opens to drag it
 
 SESSION

@@ -12,7 +12,20 @@ read -r w h x y < <(i3-msg -t get_outputs | jq -r --arg o "$o" '.[] | select(.na
 sink=$(wpctl inspect @DEFAULT_AUDIO_SINK@ | sed -n 's/.*node.name = "\(.*\)"/\1/p')
 mic=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ | sed -n 's/.*node.name = "\(.*\)"/\1/p')
 out="$dir/$(date +%Y-%m-%d_%H-%M-%S).mp4"
-audio=(-f pulse -i "$mic" -f pulse -i "$sink.monitor" -filter_complex "[1:a][2:a]amix=inputs=2:duration=longest[a]" -map 0:v -map "[a]" -c:a aac -b:a 160k)
+# pick audio; last choice first so Enter repeats it
+last=~/.config/ghost/rec-audio; mkdir -p ~/.config/ghost
+opts=$'mic + computer sound\nmic only\ncomputer sound only\nno audio'
+prev=$(cat "$last" 2>/dev/null)
+[ -n "$prev" ] && opts=$(printf '%s\n%s' "$prev" "$(printf '%s\n' "$opts" | grep -vFx "$prev")")
+choice=$(printf '%s\n' "$opts" | rofi -dmenu -i -p "record" -mesg "screen: $o" -theme-str 'window{width:420px;} listview{lines:4;}')
+[ -z "$choice" ] && exit 0
+echo "$choice" > "$last"
+case "$choice" in
+  "mic + computer sound") audio=(-f pulse -i "$mic" -f pulse -i "$sink.monitor" -filter_complex "[1:a][2:a]amix=inputs=2:duration=longest[a]" -map 0:v -map "[a]" -c:a aac -b:a 160k) ;;
+  "mic only")             audio=(-f pulse -i "$mic" -map 0:v -map 1:a -c:a aac -b:a 160k) ;;
+  "computer sound only")  audio=(-f pulse -i "$sink.monitor" -map 0:v -map 1:a -c:a aac -b:a 160k) ;;
+  *)                      audio=(-map 0:v) ;;
+esac
 if ffmpeg -hide_banner -loglevel error -init_hw_device vaapi=g:/dev/dri/renderD128 -f lavfi -i nullsrc=s=64x64 -frames:v 1 \
      -vf format=nv12,hwupload -c:v h264_vaapi -f null - 2>/dev/null; then
   video=(-vaapi_device /dev/dri/renderD128 -vf "format=nv12,hwupload" -c:v h264_vaapi -qp 24)
@@ -22,4 +35,4 @@ fi
 ffmpeg -hide_banner -loglevel error -f x11grab -framerate 30 -video_size "${w}x${h}" -i ":0.0+${x},${y}" \
   "${audio[@]}" "${video[@]}" -movflags +faststart "$out" >/tmp/ghost-rec.log 2>&1 &
 echo $! > "$pidf"
-notify-send "recording" "Super+Shift+r to stop"
+notify-send "recording - $choice" "Super+Shift+r to stop"
