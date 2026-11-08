@@ -1,6 +1,8 @@
 #!/bin/sh
 # HUD readout for the laptop LLM. loaded = green, idle = bone, down = dim.
-api="http://${MIND_HOST:-192.168.1.10}:11434"
+[ -f ~/.config/mind/host ] && MIND_HOST=${MIND_HOST:-$(cat ~/.config/mind/host)}
+[ -z "$MIND_HOST" ] && { echo "%{F#7d8079}MIND OFF%{F-}"; exit; }
+api="http://$MIND_HOST:11434"
 if ! curl -s --max-time 1 "$api/api/version" >/dev/null; then
   echo "%{F#7d8079}MIND OFF%{F-}"; exit
 fi

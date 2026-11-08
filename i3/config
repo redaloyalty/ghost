@@ -1,4 +1,4 @@
-# i3 - Ghost. Keys are documented in ~/reda/Rice/Keys.md (Super+/ shows it).
+# i3 - Ghost. Every key is in ../KEYS.md (Super+/ shows it).
 set $mod Mod4
 set $term kitty
 font pango:JetBrainsMono Nerd Font 10

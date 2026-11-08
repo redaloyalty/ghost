@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+# lock.png = wallpaper, blurred and darkened. run after changing wallpaper/wall.png
+from pathlib import Path
+from PIL import Image, ImageFilter, ImageEnhance
+w = Path.home() / "dotfiles/wallpaper"
+im = Image.open(w / "wall.png").convert("RGB").resize((1920, 1080))
+ImageEnhance.Brightness(im.filter(ImageFilter.GaussianBlur(18))).enhance(0.55).save(w / "lock.png")
+print("wrote", w / "lock.png")
