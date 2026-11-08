@@ -56,6 +56,12 @@ SCREENSHOTS  (saved in ~/Pictures/Screenshots)
   Shift + Print          drag a box
   Super + Shift + s      drag a box
 
+MUSIC  (SoundCloud in Chrome, Spotify, any player)
+  Super + p              play / pause
+  Super + ] / [          next / previous
+  bar: shows only while something plays - click the icons
+  media keys on the keyboard work too
+
 SOUND
   bar VOL: left click   pick output (monitor / laptop speakers)
   bar VOL: right click  mute on/off      scroll = volume

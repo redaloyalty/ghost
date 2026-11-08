@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# music status | toggle | next | prev   - any MPRIS player (Chrome/SoundCloud, Spotify, mpv...)
+# picks the player that is Playing, else the first one that is Paused
+pick() {
+  for p in $(busctl --user list --no-legend 2>/dev/null | awk '{print $1}' | grep '^org.mpris.MediaPlayer2\.'); do
+    s=$(busctl --user get-property "$p" /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player PlaybackStatus 2>/dev/null | cut -d'"' -f2)
+    [ "$s" = Playing ] && { echo "$p Playing"; return; }
+    [ "$s" = Paused ] && first=${first:-"$p Paused"}
+  done
+  [ -n "$first" ] && echo "$first"
+}
+call() { busctl --user call "$1" /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player "$2" >/dev/null 2>&1; }
+read -r p s < <(pick)
+case "${1:-status}" in
+  toggle) [ -n "$p" ] && call "$p" PlayPause ;;
+  next)   [ -n "$p" ] && call "$p" Next ;;
+  prev)   [ -n "$p" ] && call "$p" Previous ;;
+  status)
+    [ -z "$p" ] && { echo ""; exit; }
+    meta=$(busctl --user get-property "$p" /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player Metadata --json=short 2>/dev/null)
+    ~/.local/share/ghost/venv/bin/python - "$s" "$meta" <<'PY'
+import sys, json
+import arabic_reshaper
+from bidi.algorithm import get_display
+state, raw = sys.argv[1], sys.argv[2]
+try: d = json.loads(raw)["data"]
+except Exception: d = {}
+title = (d.get("xesam:title") or {}).get("data") or ""
+artist = (d.get("xesam:artist") or {}).get("data") or []
+artist = artist[0] if isinstance(artist, list) and artist else (artist or "")
+for junk in (" | SoundCloud", " - YouTube"):
+    title = title.replace(junk, "")
+text = f"{title} - {artist}" if artist else title
+text = text if len(text) <= 42 else text[:41] + "…"
+text = get_display(arabic_reshaper.reshape(text))
+text = text.replace("%", "%%")
+icon = "󰏤" if state == "Playing" else "󰐊"
+b = "~/dotfiles/bin/music"
+print(f"%{{A1:{b} prev:}}%{{F#7d8079}}󰒮%{{F-}}%{{A}} "
+      f"%{{A1:{b} toggle:}}%{{F#8fbf8f}}{icon}%{{F-}}%{{A}} "
+      f"%{{A1:{b} next:}}%{{F#7d8079}}󰒭%{{F-}}%{{A}}  "
+      f"%{{F{'#d6d3cb' if state == 'Playing' else '#7d8079'}}}{text}%{{F-}}")
+PY
+    ;;
+esac
