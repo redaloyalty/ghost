@@ -1,0 +1,4 @@
+#!/bin/sh
+f=~/.config/ghost-seen
+[ -f "$f" ] && exit 0
+touch "$f"; sleep 2; ~/dotfiles/bin/keys

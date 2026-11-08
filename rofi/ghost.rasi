@@ -1,0 +1,17 @@
+* {
+  bg: #0a0a0aee; ash: #121412; line: #2a2f2a; dim: #7d8079; bone: #d6d3cb; nv: #8fbf8f;
+  background-color: transparent; text-color: @bone;
+  font: "JetBrainsMono Nerd Font 11";
+}
+window { width: 640px; background-color: @bg; border: 1px; border-color: @nv; border-radius: 6px; padding: 18px; }
+mainbox { spacing: 12px; }
+inputbar { children: [prompt, entry]; spacing: 10px; padding: 10px 12px; background-color: @ash; border-radius: 4px; }
+prompt { text-color: @nv; }
+entry { placeholder: "type..."; placeholder-color: @dim; }
+listview { lines: 8; spacing: 2px; }
+element { padding: 8px 12px; border-radius: 4px; }
+element-icon { size: 20px; margin: 0 10px 0 0; }
+element selected { background-color: @ash; text-color: @nv; }
+element-text { text-color: inherit; }
+message { padding: 10px 12px; background-color: @ash; border-radius: 4px; }
+textbox { text-color: @dim; }

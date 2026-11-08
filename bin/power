@@ -1,0 +1,9 @@
+#!/bin/sh
+c=$(printf ' lock\n󰍃 log out\n󰤄 suspend\n restart\n⏻ shut down' | rofi -dmenu -i -p "session" -theme-str 'window{width:320px;} listview{lines:5;}')
+case "$c" in
+  *lock) ~/dotfiles/bin/lock ;;
+  *"log out") i3-msg exit ;;
+  *suspend) systemctl suspend ;;
+  *restart) systemctl reboot ;;
+  *"shut down") systemctl poweroff ;;
+esac

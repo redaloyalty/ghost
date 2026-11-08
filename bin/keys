@@ -1,0 +1,3 @@
+#!/bin/sh
+# shows the same note that lives in the vault, so docs and keys never drift
+kitty --class keys-float --title keys -e less -R ~/reda/Rice/Keys.md
