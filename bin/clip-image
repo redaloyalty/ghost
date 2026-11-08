@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+# put a PNG on the clipboard without xclip. stays alive until something else is copied (X11 rule).
+import sys, gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk, GdkPixbuf
+cb = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+cb.set_image(GdkPixbuf.Pixbuf.new_from_file(sys.argv[1]))
+cb.store()
+first = [True]
+def changed(*_):
+    if first[0]: first[0] = False; return
+    Gtk.main_quit()
+cb.connect("owner-change", changed)
+Gtk.main()

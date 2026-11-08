@@ -5,5 +5,6 @@ d=~/Pictures/Screenshots; mkdir -p "$d"
 f="$d/$(date +%Y-%m-%d_%H-%M-%S).png"
 if [ "$1" = area ]; then import "$f"; else import -window root "$f"; fi
 [ -f "$f" ] || exit 0
-command -v xclip >/dev/null && xclip -selection clipboard -t image/png -i "$f"
-notify-send -i "$f" "screenshot" "$(basename "$f")"
+pkill -f "bin/clip-image" 2>/dev/null
+setsid ~/dotfiles/bin/clip-image "$f" >/dev/null 2>&1 < /dev/null &
+notify-send -i "$f" "screenshot copied" "Ctrl+V to paste - saved as $(basename "$f")"
