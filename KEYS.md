@@ -52,7 +52,7 @@ SCREENSHOTS  (saved in ~/Pictures/Screenshots)
 SOUND
   bar VOL: left click   pick output (monitor / laptop speakers)
   bar VOL: right click  mute on/off      scroll = volume
-  volume keys on the keyboard work too
+  volume and brightness keys on the keyboard work too
 
 SESSION
   Super + Escape         lock
