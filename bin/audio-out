@@ -1,0 +1,4 @@
+#!/bin/sh
+# pick the sound output (monitor, laptop speakers, headphones...)
+pick=$(pw-dump | jq -r '.[] | select(.info.props."media.class"=="Audio/Sink") | "\(.id)  \(.info.props."node.description")"' | rofi -dmenu -i -p "sound out" -theme-str 'window{width:480px;} listview{lines:5;}')
+[ -n "$pick" ] && wpctl set-default "${pick%% *}" && notify-send "sound" "${pick#*  }"
