@@ -1,0 +1,23 @@
+#!/bin/sh
+# small system card in Ghost colours. no hostname, no user - safe for screenshots.
+g='\033[38;2;143;191;143m'; b='\033[38;2;214;211;203m'; d='\033[38;2;125;128;121m'; r='\033[0m'
+os=$(. /etc/os-release; echo "$PRETTY_NAME")
+kern=$(uname -r | cut -d- -f1)
+wm=$(i3 --version 2>/dev/null | awk '{print "i3 " $3}')
+up=$(uptime -p | sed 's/up //')
+cpu=$(grep -m1 "model name" /proc/cpuinfo | sed 's/.*: //; s/(R)//g; s/(TM)//g; s/ CPU//; s/ @.*//; s/  */ /g')
+mem=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
+pkgs=$(dpkg -l | grep -c '^ii')
+printf "\n"
+printf "${g}     .-----.     ${d}OS    ${b}%s${r}\n" "$os"
+printf "${g}    /       \\    ${d}KERN  ${b}%s${r}\n" "$kern"
+printf "${g}   |  ${b}O   O${g}  |   ${d}WM    ${b}%s + polybar + picom${r}\n" "$wm"
+printf "${g}   |    ${b}^${g}    |   ${d}TERM  ${b}kitty / JetBrainsMono Nerd Font${r}\n"
+printf "${g}    \\ ${b}'''''${g} /    ${d}CPU   ${b}%s${r}\n" "$cpu"
+printf "${g}     '-----'     ${d}MEM   ${b}%s${r}\n" "$mem"
+printf "${g}      ghost      ${d}PKGS  ${b}%s${r}   ${d}UP ${b}%s${r}\n\n" "$pkgs" "$up"
+printf "                 "
+for c in 0a0a0a 121412 2a2f2a 7d8079 d6d3cb 8fbf8f b6e3a8 c2564a; do
+  printf "\033[48;2;%d;%d;%dm   \033[0m" 0x${c%????} 0x$(echo $c | cut -c3-4) 0x${c#????}
+done
+printf "\n\n"
