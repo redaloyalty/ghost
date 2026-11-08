@@ -21,6 +21,12 @@ MIND (the laptop LLM)
   Super + i              laptop + mind status
   bar, middle            left click = chat, right click = ask
 
+TERMINAL SEE-THROUGH (kitty)
+  Ctrl + Shift + =       more solid
+  Ctrl + Shift + -       more see-through
+  Ctrl + Shift + 0       back to default (0.82)
+  default lives in kitty/kitty.conf: background_opacity
+
 WINDOWS
   Super + Shift + q      close window
   Super + h j k l        move focus (arrows work too)
