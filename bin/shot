@@ -1,0 +1,9 @@
+#!/bin/sh
+# shot        full screen (both screens)
+# shot area   drag a box with the mouse
+d=~/Pictures/Screenshots; mkdir -p "$d"
+f="$d/$(date +%Y-%m-%d_%H-%M-%S).png"
+if [ "$1" = area ]; then import "$f"; else import -window root "$f"; fi
+[ -f "$f" ] || exit 0
+command -v xclip >/dev/null && xclip -selection clipboard -t image/png -i "$f"
+notify-send -i "$f" "screenshot" "$(basename "$f")"
