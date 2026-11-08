@@ -162,6 +162,11 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
+# bar style + hidden-bar peek
+bindsym Mod1+$mod+b exec --no-startup-id ~/dotfiles/bin/bar-style
+bindsym Super_L exec --no-startup-id ~/dotfiles/bin/bar-peek show
+bindsym --release Super_L exec --no-startup-id ~/dotfiles/bin/bar-peek hide
+
 # session
 bindsym $mod+Escape exec ~/dotfiles/bin/lock
 bindsym $mod+Shift+c reload

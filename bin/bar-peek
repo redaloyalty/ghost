@@ -1,0 +1,4 @@
+#!/bin/sh
+# hidden style: Super down shows the bar, Super up hides it again
+[ "$(cat ~/.config/ghost/bar-style 2>/dev/null)" = hidden ] || exit 0
+polybar-msg cmd "$1" >/dev/null 2>&1

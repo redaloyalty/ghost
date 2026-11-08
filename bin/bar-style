@@ -1,0 +1,8 @@
+#!/bin/sh
+# Super + Alt + b: pick the bar style
+mkdir -p ~/.config/ghost
+cur=$(cat ~/.config/ghost/bar-style 2>/dev/null || echo hud)
+pick=$(printf 'hud\nislands\nbottom\nhidden' | rofi -dmenu -i -p "bar" -mesg "now: $cur   (hidden = hold Super to see it)" -theme-str 'window{width:420px;} listview{lines:4;}')
+[ -z "$pick" ] && exit 0
+echo "$pick" > ~/.config/ghost/bar-style
+~/dotfiles/polybar/launch.sh

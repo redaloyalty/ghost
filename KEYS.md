@@ -70,6 +70,10 @@ RECORD  (saved in ~/Videos/Recordings)
                          mic / computer sound on-off: speaker icons in OBS's Audio Mixer
   Super + Shift + v      newest recording -> WhatsApp-ready copy (720p, small), folder opens to drag it
 
+BAR
+  Super + Alt + b        bar style: hud / islands / bottom / hidden
+  hidden style           hold Super to see the bar
+
 SESSION
   Super + Escape         lock
   Super + Shift + e      menu: lock, log out, suspend, restart, shut down
