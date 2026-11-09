@@ -78,6 +78,7 @@ assign [class="(?i)code"] $ws3
 for_window [class="mind-float"] floating enable, resize set 900 600, move position center
 for_window [class="obs"] floating enable, resize set 1100 760, move position center
 for_window [class="keys-float"] floating enable, resize set 820 760, move position center
+for_window [class="(?i)copyq"] floating enable, resize set 760 560, move position center
 for_window [window_role="pop-up"] floating enable
 for_window [window_type="dialog"] floating enable
 
@@ -99,7 +100,7 @@ bindsym $mod+a exec kitty --directory ~/ll --title claude -e claude
 bindsym $mod+e exec kitty --title ranger -e ranger
 bindsym $mod+n exec nautilus
 # clipboard history and screenshot with arrows / boxes
-bindsym $mod+v exec --no-startup-id copyq toggle
+bindsym $mod+v exec --no-startup-id ~/dotfiles/bin/clip-pick
 bindsym $mod+Shift+a exec --no-startup-id flameshot gui
 # hog: what eats the laptop, and act on it; hog-watch warns when memory or CPU runs hot
 bindsym $mod+Shift+i exec --no-startup-id ~/dotfiles/bin/hog

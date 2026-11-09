@@ -1,0 +1,17 @@
+#!/bin/sh
+# Super+v: clipboard history in rofi (CopyQ keeps it). Enter puts it back on the clipboard,
+# Alt+Enter also pastes it into the window you were in.
+command -v copyq >/dev/null || { notify-send "clipboard" "copyq is not installed"; exit 1; }
+pgrep -x copyq >/dev/null || { setsid -f copyq --start-server >/dev/null 2>&1; sleep 1; }
+list=$(copyq eval -- '
+  for (var i = 0; i < size() && i < 60; ++i) {
+    var t = str(read(i)).replace(/\s+/g, " ").trim();
+    print((t.length > 110 ? t.slice(0, 110) + "…" : t) + "\n");
+  }')
+[ -z "$list" ] && { notify-send "clipboard" "nothing copied yet"; exit 0; }
+i=$(printf '%s\n' "$list" | rofi -dmenu -i -p "clipboard" -format i -kb-custom-1 "Alt+Return" \
+      -mesg "enter = copy · alt+enter = copy and paste" -theme-str 'window{width:760px;} listview{lines:12;}')
+code=$?
+[ -z "$i" ] && exit 0
+copyq select "$i"
+if [ "$code" -eq 10 ]; then sleep 0.15; xdotool key --clearmodifiers ctrl+v; fi

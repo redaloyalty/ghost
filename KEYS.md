@@ -102,7 +102,7 @@ BAR CLICKS
   volume                 pick speakers (right click = mute)
 
 CLIPBOARD AND SCREENSHOTS
-  Super + v              clipboard history (CopyQ), pick to paste
+  Super + v              clipboard history: enter = copy, alt + enter = copy and paste
   Super + Shift + a      screenshot with arrows, boxes, text (Flameshot)
 
 NIGHT LIGHT
