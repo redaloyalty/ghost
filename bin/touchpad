@@ -6,5 +6,5 @@ for id in $(xinput list | grep -i touchpad | sed -n 's/.*id=\([0-9]*\).*/\1/p');
   xinput set-prop "$id" "libinput Tapping Button Mapping Enabled" 1 0 2>/dev/null   # 2 fingers right, 3 middle
   xinput set-prop "$id" "libinput Natural Scrolling Enabled" 1
   xinput set-prop "$id" "libinput Disable While Typing Enabled" 1
-  xinput set-prop "$id" "libinput Click Method Enabled" 0 1 2>/dev/null           # two-finger click = right
+  xinput set-prop "$id" "libinput Click Method Enabled" 1 0 2>/dev/null           # press bottom-right corner = right click
 done
