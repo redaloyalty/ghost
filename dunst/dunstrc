@@ -1,25 +1,96 @@
+# ghost - notifications (dunst 1.9)
 [global]
     monitor = 0
     follow = mouse
-    width = 380
     origin = top-right
-    offset = 16x48
+    offset = 16x56
+    width = (280, 420)
+    height = 220
+    notification_limit = 4
+    indicate_hidden = yes
+    stack_duplicates = true
+    hide_duplicate_count = false
+    sort = yes
+    idle_threshold = 120          # stay up while I'm away
+    show_age_threshold = 60
+
     padding = 12
     horizontal_padding = 14
+    text_icon_padding = 12
+    gap_size = 8
     frame_width = 1
     frame_color = "#2a2f2a"
     separator_color = frame
-    corner_radius = 6
-    font = JetBrainsMono Nerd Font 10
-    format = "<b>%s</b>\n%b"
+    corner_radius = 8
+    transparency = 0
+
+    font = Inter Display 10.5
+    markup = full
+    # small app name, bold title, body
+    format = "<span size='x-small' foreground='#7d8079'>%a</span>\n<b>%s</b>\n%b"
+    alignment = left
+    vertical_alignment = center
+    word_wrap = yes
+    ellipsize = end
+    ignore_newline = no
+    line_height = 2
+
+    icon_position = left
+    min_icon_size = 32
+    max_icon_size = 44
+    enable_recursive_icon_lookup = true
+    icon_theme = "Yaru, Adwaita"
+
+    progress_bar = true
+    progress_bar_height = 6
+    progress_bar_frame_width = 0
+    progress_bar_corner_radius = 3
+    highlight = "#d4a02a"
+
+    # mouse: left opens the message, middle clears all, right closes this one
+    mouse_left_click = do_action, close_current
+    mouse_middle_click = close_all
+    mouse_right_click = close_current
+
+    history_length = 50
+    dmenu = /usr/bin/rofi -dmenu -p action
+    browser = /usr/bin/xdg-open
+
 [urgency_low]
-    background = "#0a0a0aee"
+    background = "#0e0e0dee"
     foreground = "#7d8079"
+    timeout = 4
+
 [urgency_normal]
-    background = "#0a0a0aee"
-    foreground = "#d6d3cb"
+    background = "#0e0e0dee"
+    foreground = "#e6e1d6"
     frame_color = "#8fbf8f"
+    timeout = 7
+
 [urgency_critical]
-    background = "#0a0a0aee"
-    foreground = "#d6d3cb"
+    background = "#1a0f0dee"
+    foreground = "#f1e6e0"
+    frame_color = "#c2564a"
+    timeout = 0
+
+# ---- per app
+[whatsapp]
+    appname = "*WhatsApp*"
+    summary = "*"
+    frame_color = "#25d366"
+    timeout = 8
+[whatsapp_web]
+    body = "*web.whatsapp.com*"
+    frame_color = "#25d366"
+[teams]
+    appname = "*Teams*"
+    frame_color = "#7b83eb"
+[teams_web]
+    body = "*teams.microsoft.com*"
+    frame_color = "#7b83eb"
+[mind]
+    appname = "mind*"
+    frame_color = "#d4a02a"
+[recording]
+    summary = "*record*"
     frame_color = "#c2564a"

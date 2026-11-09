@@ -1,0 +1,43 @@
+#!/bin/bash
+# bt           Bluetooth menu: connect / disconnect paired devices, pair a new one, power
+# bt status    bar text: icon + connected device(s)
+on() { bluetoothctl show | grep -q "Powered: yes"; }
+connected() { bluetoothctl devices Connected | cut -d' ' -f3-; }
+short() { echo "$1" | sed -E 's/.*[Mm]ouse.*/Mouse/' | cut -c1-14; }
+case "$1" in
+  status)
+    if ! on; then echo "%{F#7d8079}󰂲%{F-}"; exit; fi
+    c=$(connected | while read -r n; do short "$n"; done | paste -sd, -)
+    [ -n "$c" ] && echo "%{F#8fbf8f}󰂱%{F-} $c" || echo "%{F#7d8079}󰂯%{F-}" ;;
+  *)
+    if ! on; then
+      [ "$(printf '󰂯  Turn Bluetooth on\ncancel' | rofi -dmenu -p bluetooth -theme-str 'listview{lines:2;}')" = "󰂯  Turn Bluetooth on" ] &&
+        bluetoothctl power on >/dev/null && notify-send -a bluetooth "Bluetooth" "on"
+      exit
+    fi
+    rows=$(bluetoothctl devices Paired | while read -r _ mac name; do
+      if bluetoothctl info "$mac" | grep -q "Connected: yes"; then echo "󰂱  $name  ·  connected|$mac"; else echo "󰂯  $name|$mac"; fi
+    done)
+    pick=$( { printf '%s\n' "$rows" | cut -d'|' -f1; echo "󰂰  Pair a new device..."; echo "󰂲  Turn Bluetooth off"; } |
+            rofi -dmenu -i -p bluetooth -mesg "enter = connect / disconnect" -theme-str 'window{width:520px;} listview{lines:7;}')
+    case "$pick" in
+      "") ;;
+      *"Turn Bluetooth off") bluetoothctl power off >/dev/null; notify-send -a bluetooth "Bluetooth" "off" ;;
+      *"Pair a new device"*)
+        notify-send -a bluetooth "Bluetooth" "looking for devices for 12 s - put yours in pairing mode"
+        timeout 12 bluetoothctl --timeout 12 scan on >/dev/null 2>&1
+        new=$(bluetoothctl devices | while read -r _ mac name; do
+                bluetoothctl info "$mac" | grep -q "Paired: yes" || { [ "$name" != "${mac//:/-}" ] && echo "$name|$mac"; }; done)
+        [ -z "$new" ] && { notify-send -a bluetooth "Bluetooth" "nothing new found"; exit; }
+        p=$(printf '%s\n' "$new" | cut -d'|' -f1 | rofi -dmenu -i -p "pair" -theme-str 'window{width:520px;}') || exit
+        mac=$(printf '%s\n' "$new" | grep -F "$p|" | head -1 | cut -d'|' -f2)
+        bluetoothctl pair "$mac" >/dev/null && bluetoothctl trust "$mac" >/dev/null && bluetoothctl connect "$mac" >/dev/null &&
+          notify-send -a bluetooth "Bluetooth" "paired $p" || notify-send -a bluetooth -u critical "Bluetooth" "could not pair $p" ;;
+      *)
+        mac=$(printf '%s\n' "$rows" | grep -F "$pick|" | head -1 | cut -d'|' -f2)
+        name=$(echo "$pick" | sed -E 's/^[^ ]+  //; s/  ·  connected$//')
+        if [[ "$pick" == *connected ]]; then bluetoothctl disconnect "$mac" >/dev/null && notify-send -a bluetooth "Bluetooth" "disconnected $name"
+        else notify-send -a bluetooth "Bluetooth" "connecting $name..."
+             bluetoothctl connect "$mac" >/dev/null && notify-send -a bluetooth "Bluetooth" "connected $name" || notify-send -a bluetooth -u critical "Bluetooth" "could not connect $name - is it on and nearby?"; fi ;;
+    esac ;;
+esac

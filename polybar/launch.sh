@@ -22,5 +22,5 @@ for m in $(polybar --list-monitors | cut -d: -f1); do
   fi
 done
 # floating islands reserve no space themselves, so make room at the top
-if [ "$style" = islands ]; then i3-msg -q "gaps top all set 46"; else i3-msg -q "gaps top all set 4"; fi
+(sleep 1.2; ~/dotfiles/bin/gaps-fit) &  # after i3 finishes a reload
 if [ "$style" = hidden ]; then sleep 1.5; polybar-msg cmd hide >/dev/null 2>&1; fi

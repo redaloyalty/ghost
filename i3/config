@@ -10,6 +10,8 @@ default_floating_border pixel 2
 hide_edge_borders smart
 gaps inner 10
 gaps outer 4
+# room for the floating islands bars on the big screen (bin/gaps-fit adjusts other bar styles)
+gaps top 46
 # class                 border  bg      text    indicator child_border
 client.focused          #8fbf8f #121412 #d6d3cb #b6e3a8   #8fbf8f
 client.focused_inactive #2a2f2a #0a0a0a #7d8079 #2a2f2a   #2a2f2a
@@ -20,6 +22,12 @@ client.background       #0a0a0a
 # startup
 # big screen (DP-2) physically on the left; X11 puts it right by default
 exec_always --no-startup-id ~/dotfiles/bin/screens
+# keyboard: English + Arabic, Alt+Shift switches (bar shows EN / ع)
+exec_always --no-startup-id setxkbmap -layout us,ara -option '' -option grp:alt_shift_toggle
+# new windows split the longer side of the focused window
+exec_always --no-startup-id sh -c "pkill -f [a]utotiling/bin/python; exec ~/.local/bin/autotiling"
+exec --no-startup-id ~/dotfiles/bin/screen-watch
+exec --no-startup-id ~/dotfiles/bin/hog-watch
 exec_always --no-startup-id ~/dotfiles/bin/wall
 exec_always --no-startup-id ~/dotfiles/bin/compositor
 exec_always --no-startup-id ~/dotfiles/polybar/launch.sh
@@ -51,6 +59,13 @@ workspace $ws8 output eDP-1
 workspace $ws9 output eDP-1
 workspace $ws10 output eDP-1
 
+# laptop workspaces: the side bar reserves its own space, so only a small top gap
+workspace $ws6 gaps top 4
+workspace $ws7 gaps top 4
+workspace $ws8 gaps top 4
+workspace $ws9 gaps top 4
+workspace $ws10 gaps top 4
+
 # chat apps first (more specific), they live on the laptop screen
 assign [instance="web.whatsapp.com"] $ws6
 assign [instance="teams.microsoft.com"] $ws6
@@ -79,6 +94,12 @@ bindsym $mod+o exec obsidian
 bindsym $mod+a exec kitty --directory ~/ll --title claude -e claude
 bindsym $mod+e exec kitty --title ranger -e ranger
 bindsym $mod+n exec nautilus
+# hog: what eats the laptop, and act on it; hog-watch warns when memory or CPU runs hot
+bindsym $mod+Shift+i exec --no-startup-id ~/dotfiles/bin/hog
+# notifications: grave = last one back, Shift+grave = clear all, Ctrl+grave = do not disturb
+bindsym $mod+grave exec --no-startup-id dunstctl history-pop
+bindsym $mod+Shift+grave exec --no-startup-id dunstctl close-all
+bindsym $mod+Ctrl+grave exec --no-startup-id ~/dotfiles/bin/dnd
 bindsym $mod+i exec ~/dotfiles/bin/stats
 
 # windows
@@ -170,6 +191,10 @@ bindsym --release Super_L exec --no-startup-id ~/dotfiles/bin/bar-peek hide
 # session
 bindsym $mod+Escape exec ~/dotfiles/bin/lock
 bindsym $mod+Shift+c reload
+# glass: see-through level for all normal windows
+bindsym $mod+Ctrl+equal exec --no-startup-id ~/dotfiles/bin/glass up
+bindsym $mod+Ctrl+minus exec --no-startup-id ~/dotfiles/bin/glass down
+bindsym $mod+Ctrl+0 exec --no-startup-id ~/dotfiles/bin/glass off
 bindsym $mod+Ctrl+r restart
 bindsym $mod+Shift+e exec ~/dotfiles/bin/power
 

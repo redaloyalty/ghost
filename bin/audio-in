@@ -1,0 +1,25 @@
+#!/bin/sh
+# audio-in            pick the microphone (rofi)
+# audio-in status     bar text: mic icon + short name, red when muted
+# audio-in set NAME   switch to the mic whose name contains NAME (Dell, Built-in, ...)
+sources() { pw-dump | jq -r '.[] | select(.info.props."media.class"=="Audio/Source") | "\(.id)  \(.info.props."node.description")"'; }
+short() { case "$1" in *DELL*|*Dell*) echo Dell ;; *Built-in*) echo Laptop ;; *[Hh]eadset*|*[Hh]eadphone*|*AirPods*|*Buds*) echo Headset ;; *) echo "$1" | cut -c1-12 ;; esac; }
+case "$1" in
+  status)
+    name=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ 2>/dev/null | sed -n 's/.*node.description = "\(.*\)"/\1/p')
+    [ -z "$name" ] && { echo "%{F#7d8079}󰍭 none%{F-}"; exit; }
+    if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -q MUTED; then echo "%{F#c2564a}󰍭 $(short "$name")%{F-}"
+    else echo "%{F#7d8079}󰍬%{F-} $(short "$name")"; fi ;;
+  set)
+    id=$(sources | grep -i "$2" | head -1 | cut -d' ' -f1)
+    [ -n "$id" ] && wpctl set-default "$id" && wpctl set-mute "$id" 0 && notify-send -a mic "mic" "$(sources | grep "^$id " | cut -d' ' -f3-)" ;;
+  *)
+    if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -q MUTED; then top="󰍬  Unmute mic"; else top="󰍭  Mute mic"; fi
+    pick=$( { echo "$top"; sources; } | rofi -dmenu -i -p "mic" -mesg "right click on the bar also mutes" -theme-str 'window{width:480px;} listview{lines:5;}')
+    case "$pick" in
+      "") ;;
+      *"Mute mic") wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 1; notify-send -a mic "mic" "muted" ;;
+      *"Unmute mic") wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0; notify-send -a mic "mic" "on" ;;
+      *) wpctl set-default "${pick%% *}" && wpctl set-mute "${pick%% *}" 0 && notify-send -a mic "mic" "${pick#*  }" ;;
+    esac ;;
+esac

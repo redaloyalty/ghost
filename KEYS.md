@@ -27,6 +27,12 @@ TERMINAL SEE-THROUGH (kitty)
   Ctrl + Shift + 0       back to default (0.82)
   default lives in kitty/kitty.conf: background_opacity
 
+ALL WINDOWS SEE-THROUGH (glass, picom)
+  Super + Ctrl + =       more glass
+  Super + Ctrl + -       more solid
+  Super + Ctrl + 0       solid again
+  fullscreen, video and OBS always stay solid; level kept in ~/.config/ghost/glass
+
 WINDOWS
   Super + Shift + q      close window
   Super + h j k l        move focus (arrows work too)
@@ -88,3 +94,9 @@ SESSION
 LOST?
   Super + Shift + e  then  log out  ->  at login click the gear  ->  pick Ubuntu
   = back to the normal desktop, nothing changed there.
+
+BAR CLICKS
+  CPU / MEM              hog: what eats the laptop, act on it (also Super + Shift + i)
+  mic                    pick mic, mute / unmute (right click = mute)
+  bluetooth              connect / disconnect, pair new, on / off
+  volume                 pick speakers (right click = mute)
