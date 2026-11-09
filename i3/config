@@ -22,6 +22,7 @@ client.background       #0a0a0a
 # startup
 # big screen (DP-2) physically on the left; X11 puts it right by default
 exec_always --no-startup-id ~/dotfiles/bin/screens
+exec_always --no-startup-id ~/dotfiles/bin/touchpad
 # keyboard: English + Arabic, Alt+Shift switches (bar shows EN / ع)
 exec_always --no-startup-id setxkbmap -layout us,ara -option '' -option grp:alt_shift_toggle
 # new windows split the longer side of the focused window

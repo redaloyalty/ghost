@@ -1,0 +1,10 @@
+#!/bin/sh
+# touchpad: tap to click, two-finger tap = right click, natural scrolling, ignore it while typing.
+# GNOME did this for us; under i3 the touchpad starts with libinput's bare defaults.
+for id in $(xinput list | grep -i touchpad | sed -n 's/.*id=\([0-9]*\).*/\1/p'); do
+  xinput set-prop "$id" "libinput Tapping Enabled" 1
+  xinput set-prop "$id" "libinput Tapping Button Mapping Enabled" 1 0 2>/dev/null   # 2 fingers right, 3 middle
+  xinput set-prop "$id" "libinput Natural Scrolling Enabled" 1
+  xinput set-prop "$id" "libinput Disable While Typing Enabled" 1
+  xinput set-prop "$id" "libinput Click Method Enabled" 0 1 2>/dev/null           # two-finger click = right
+done
