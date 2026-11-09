@@ -6,7 +6,7 @@ here=$(pwd)
 stamp=$(date +%Y%m%d-%H%M%S)
 
 mkdir -p ~/.config
-for t in i3 polybar kitty rofi picom dunst; do
+for t in i3 polybar kitty rofi picom dunst gammastep; do
   dest="$HOME/.config/$t"
   if [ -e "$dest" ] && [ ! -L "$dest" ]; then
     mv "$dest" "$dest.bak-$stamp"
@@ -15,6 +15,13 @@ for t in i3 polybar kitty rofi picom dunst; do
   ln -sfn "$here/$t" "$dest"
   echo "linked $t"
 done
+
+# app theme: dark sage, Papirus icons, Bibata cursor (gtk ini for most apps, gsettings for GNOME ones)
+mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
+ln -sf "$here/gtk/settings.ini" ~/.config/gtk-3.0/settings.ini
+ln -sf "$here/gtk/settings.ini" ~/.config/gtk-4.0/settings.ini
+gsettings set org.gnome.desktop.interface gtk-theme Yaru-sage-dark 2>/dev/null || true
+gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark 2>/dev/null || true
 
 chmod +x bin/* polybar/*.sh
 [ -f wallpaper/wall.png ] && [ ! -f wallpaper/lock.png ] && bin/make-lock || true

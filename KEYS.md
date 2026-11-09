@@ -100,3 +100,10 @@ BAR CLICKS
   mic                    pick mic, mute / unmute (right click = mute)
   bluetooth              connect / disconnect, pair new, on / off
   volume                 pick speakers (right click = mute)
+
+CLIPBOARD AND SCREENSHOTS
+  Super + v              clipboard history (CopyQ), pick to paste
+  Super + Shift + a      screenshot with arrows, boxes, text (Flameshot)
+
+NIGHT LIGHT
+  warm screen 18:30-19:30 onwards, normal from 6-7 (gammastep/config.ini)
