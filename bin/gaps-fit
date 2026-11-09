@@ -1,0 +1,14 @@
+#!/bin/sh
+# Top gap per workspace: 46 px where the floating "islands" bars sit (primary screen),
+# 4 px everywhere else (the side bar reserves its own space). Runs from polybar/launch.sh.
+style=$(cat ~/.config/ghost/bar-style 2>/dev/null || echo hud)
+primary=$(xrandr | awk '/ connected primary/{print $1}')
+focused=$(i3-msg -t get_workspaces | jq -r '.[] | select(.focused) | .name')
+visible=$(i3-msg -t get_workspaces | jq -r '.[] | select(.visible and (.focused|not)) | .name')
+i3-msg -t get_workspaces | jq -r '.[] | "\(.output)\t\(.name)"' | while IFS="$(printf '\t')" read -r out ws; do
+  top=4; [ "$style" = islands ] && [ "$out" = "$primary" ] && top=46
+  i3-msg -q "workspace --no-auto-back-and-forth \"$ws\"; gaps top current set $top"
+done
+# put the screens back the way they were
+for ws in $visible; do i3-msg -q "workspace --no-auto-back-and-forth \"$ws\""; done
+i3-msg -q "workspace --no-auto-back-and-forth \"$focused\""

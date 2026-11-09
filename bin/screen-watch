@@ -1,0 +1,17 @@
+#!/bin/sh
+# Watches the monitor cable. On plug / unplug: re-lay the screens and restart the bar.
+state() { cat /sys/class/drm/card*-DP-*/status /sys/class/drm/card*-HDMI-*/status 2>/dev/null | tr '\n' ' '; }
+last=$(state)
+while sleep 2; do
+  now=$(state)
+  [ "$now" = "$last" ] && continue
+  last=$now
+  sleep 1   # let the monitor settle
+  ~/dotfiles/bin/screens
+  ~/dotfiles/polybar/launch.sh >/dev/null 2>&1 &
+  # monitor just plugged in: ask which mic to use
+  if xrandr | grep -q "^DP-2 connected"; then
+    ( sleep 3; a=$(notify-send -a mic -A dell="Monitor mic" -A laptop="Laptop mic" "Monitor connected" "Which mic?")
+      case $a in dell) ~/dotfiles/bin/audio-in set Dell ;; laptop) ~/dotfiles/bin/audio-in set Built-in ;; esac ) &
+  fi
+done

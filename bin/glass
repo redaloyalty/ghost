@@ -1,0 +1,24 @@
+#!/bin/sh
+# glass [up|down|off|N] - see-through level for normal windows (picom). 100 = solid.
+# kitty keeps its own opacity (ctrl+shift+= / -); fullscreen, video and OBS stay solid.
+f=~/.config/ghost/glass; mkdir -p ~/.config/ghost
+cur=$(cat "$f" 2>/dev/null || echo 100)
+case "$1" in
+  up)   n=$((cur - 4)) ;;   # more glass
+  down) n=$((cur + 4)) ;;   # more solid
+  off)  n=100 ;;
+  ''|*[!0-9]*) n=$cur ;;
+  *)    n=$1 ;;
+esac
+[ "$n" -lt 70 ] && n=70; [ "$n" -gt 100 ] && n=100
+echo "$n" > "$f"
+conf=~/dotfiles/picom/picom12.conf
+rule="  \"$n:window_type = 'normal' \&\& class_g != 'kitty' \&\& class_g != 'obs' \&\& class_g != 'ffplay' \&\& class_g != 'mpv' \&\& !fullscreen\","
+# keep one managed opacity-rule block in the config
+if grep -q '^# glass-begin' "$conf"; then
+  sed -i "/^# glass-begin/,/^# glass-end/c\\# glass-begin (managed by bin/glass)\nopacity-rule = [\n$rule\n];\n# glass-end" "$conf"
+else
+  printf '\n# glass-begin (managed by bin/glass)\nopacity-rule = [\n%s\n];\n# glass-end\n' "$(echo "$rule" | sed 's/\\&/\&/g')" >> "$conf"
+fi
+~/dotfiles/bin/compositor >/dev/null 2>&1 &
+notify-send -t 1200 "glass" "windows at $n%"

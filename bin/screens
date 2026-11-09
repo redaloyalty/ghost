@@ -1,7 +1,14 @@
 #!/bin/sh
-# external left + primary, laptop right. If the external is unplugged, laptop only.
+# external left + primary, laptop right. If the external is unplugged, laptop only
+# and i3 moves its workspaces (with their windows) over to the laptop.
 if xrandr | grep -q "^DP-2 connected"; then
   xrandr --output DP-2 --primary --mode 1920x1080 --pos 0x0 --output eDP-1 --mode 1920x1080 --pos 1920x0
+  cur=$(i3-msg -t get_workspaces | jq -r '.[] | select(.focused) | .name')
+  # plugged back in: send workspaces 1-5 home to the big screen
+  for ws in $(i3-msg -t get_workspaces | jq -r '.[] | select(.num>=1 and .num<=5) | .name'); do
+    i3-msg -q "workspace \"$ws\"; move workspace to output DP-2"
+  done
+  [ -n "$cur" ] && i3-msg -q "workspace \"$cur\""
 else
-  xrandr --output eDP-1 --primary --auto --pos 0x0
+  xrandr --output DP-2 --off --output eDP-1 --primary --auto --pos 0x0
 fi

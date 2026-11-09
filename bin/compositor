@@ -1,4 +1,8 @@
 #!/bin/sh
+# picom v12 (built into ~/.local) with animations; system v10 as fallback
 pkill -x picom
 sleep 0.5
-picom -b
+if ~/.local/bin/picom --version 2>/dev/null | grep -q '^v12'; then
+  exec ~/.local/bin/picom -b --config ~/dotfiles/picom/picom12.conf
+fi
+exec picom -b
