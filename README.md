@@ -11,10 +11,14 @@ My i3 setup on Ubuntu 24.04. Black and grey with one green accent, borrowed from
 | Window manager | i3 4.23 (gaps, 2 px green border on the focused window) |
 | Bar | polybar, styled like a HUD readout |
 | Terminal | kitty, 82% opacity |
-| Compositor | picom: blur, shadows, rounded corners, fades |
+| Compositor | picom v12 (built from source, v10 as fallback): blur, shadows, rounded corners, windows pop in and fade out, glass level on Super + Ctrl + = / - |
 | Launcher, window switcher, power menu | rofi |
-| Notifications | dunst |
-| Lock screen | i3lock-color (falls back to i3lock): blurred wallpaper, clock, a ring that turns green as you type and red when wrong |
+| Notifications | dunst: app icons, a colour per app, 4 at a time, Super + ` brings the last one back, do not disturb on Super + Ctrl + ` |
+| Lock screen | i3lock-color (falls back to i3lock): clock and a big ring centred on the main screen, green as you type, red when wrong, shows EN / Arabic so the password goes in the right layout |
+| Tiling | autotiling: a new window splits the longer side, no thin slivers |
+| hog | `bin/hog`: what is eating the laptop, by memory and live CPU. Pick an app to close, kill or restart it. `hog-watch` warns when memory runs low |
+| Bar extras | mic and bluetooth menus, keyboard layout, everything clickable |
+| Two screens | `bin/screen-watch` re-lays the screens when the monitor is plugged in or out |
 | System card | `bin/ghostfetch` |
 | Font | JetBrainsMono Nerd Font |
 

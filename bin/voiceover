@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# voiceover VIDEO.mp4 - plays the video and records the mic at the same time,
+# then puts your voice on the video: VIDEO-voice.mp4 (+ a WhatsApp copy).
+set -e
+v=$(readlink -f "$1"); [ -f "$v" ] || { echo "usage: voiceover video.mp4"; exit 1; }
+base=${v%.mp4}; wav=$(mktemp --suffix=.wav)
+mic=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ | sed -n 's/.*node.name = "\(.*\)"/\1/p')
+echo "mic: $mic"
+echo "starts in 3 seconds - read the script as the captions appear. Close the video window to stop early."
+sleep 3
+ffmpeg -v error -y -f pulse -i "$mic" -ac 1 -ar 48000 "$wav" & rec=$!
+ffplay -v error -autoexit -an -window_title "voiceover - read along" "$v" || true
+kill -INT $rec; wait $rec 2>/dev/null || true
+# light clean-up: cut low hum, even out the level
+ffmpeg -v error -y -i "$v" -i "$wav" -filter_complex "[1:a]highpass=f=90,afftdn,loudnorm=I=-16:TP=-1.5[a]" \
+  -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 160k -shortest -movflags +faststart "$base-voice.mp4"
+ffmpeg -v error -y -i "$base-voice.mp4" -vf scale=-2:720 -c:v libx264 -preset slow -crf 28 -c:a aac -b:a 96k -movflags +faststart "$base-voice-wa.mp4"
+rm -f "$wav"
+echo "done: $base-voice.mp4 and $base-voice-wa.mp4"

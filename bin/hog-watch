@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# hog-watch - warns when memory runs low or one app pegs the CPU, with a "Show" button
+# that opens hog. Started once per login by i3. Quiet for 10 min after each warning.
+exec 9>"${XDG_RUNTIME_DIR:-/tmp}/hog-watch.lock"; flock -n 9 || exit 0   # one copy only
+# live CPU per app: a 1 s sample from top (ps only gives a lifetime average)
+cpu_now() { top -b -n 2 -d 1 -w 512 | awk '/^top -/{f++} f==2 && $1 ~ /^[0-9]+$/ {c[$12]+=$9} END{for(a in c) printf "%s %.0f\n", a, c[a]}'; }
+quiet_until=0
+while sleep 30; do
+  now=$(date +%s); [ "$now" -lt "$quiet_until" ] && continue
+  read -r total avail < <(free -m | awk '/^Mem:/{print $2, $7}')
+  free_pct=$((avail * 100 / total))
+  # busiest app over the last moment (summed processes, % of one core)
+  read -r app cpu < <(cpu_now | sort -k2 -rn | head -1)
+  msg=""
+  [ "$free_pct" -lt 12 ] && msg="memory almost full: $((avail / 1024)) GB left"
+  [ "${cpu:-0}" -gt 250 ] && msg="${msg:+$msg\n}$app is using ${cpu}% CPU"
+  [ -z "$msg" ] && continue
+  quiet_until=$((now + 600))
+  act=$(notify-send -a hog -u critical -A show=Show -A later="Later" "hog" "$(printf "$msg")")
+  [ "$act" = show ] && ~/dotfiles/bin/hog &
+done

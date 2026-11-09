@@ -1,22 +1,27 @@
 #!/bin/sh
-# Ghost lock: blurred wallpaper, HUD clock, green ring while typing, red when wrong.
-# Uses i3lock-color if built (~/.local/bin/i3lock-color), else plain i3lock.
+# Ghost lock: blurred wallpaper, clock + typing ring centred on the main screen,
+# keyboard layout (EN / Arabic) under the ring so the password goes in the right language.
+# Uses i3lock-color (~/.local/bin/i3lock-color, built from ~/src/i3lock-color), else plain i3lock.
 img=~/dotfiles/wallpaper/lock.png
 if command -v i3lock-color >/dev/null; then
+  # main screen = the primary monitor's index (0 when only the laptop screen is on)
+  scr=$(xrandr --listmonitors | awk '/\*/{sub(":","",$1); print $1; exit}')
   F="JetBrainsMono Nerd Font"
-  exec i3lock-color -n -e -f -t -i "$img" -c 0a0a0aff \
-    --clock --force-clock --time-str="%H:%M" --date-str="%A %d %b" \
+  exec i3lock-color -n -e -f -t -i "$img" -c 0a0a0aff -S "${scr:-0}" \
+    --clock --force-clock --time-str="%H:%M" --date-str="%A %d %B" \
     --time-font="$F" --date-font="$F" --greeter-font="$F" --verif-font="$F" --wrong-font="$F" --layout-font="$F" \
-    --time-size=96 --date-size=18 --greeter-size=13 \
-    --time-color=d6d3cbff --date-color=7d8079ff --greeter-color=8fbf8fff \
-    --time-pos="x+120:y+h-170" --date-pos="tx+4:ty+40" --greeter-pos="tx+6:ty-110" --greeter-text="LOCKED" \
-    --time-align=1 --date-align=1 --greeter-align=1 \
-    --ind-pos="x+w-150:y+h-150" --radius=46 --ring-width=4 \
-    --inside-color=0a0a0a99 --ring-color=2a2f2aff --line-uses-inside \
+    --time-size=120 --date-size=20 --greeter-size=13 --layout-size=14 \
+    --time-color=e6e1d6ff --date-color=a8a39aff --greeter-color=8fbf8fff --layout-color=8fbf8fff \
+    --time-pos="x+w/2:y+h/2-90" --date-pos="tx:ty+44" \
+    --greeter-pos="x+w/2:y+h/2-230" --greeter-text="󰊠  ghost" \
+    --time-align=0 --date-align=0 --greeter-align=0 \
+    --ind-pos="x+w/2:y+h/2+150" --radius=70 --ring-width=7 --indicator \
+    --inside-color=0a0a0a66 --ring-color=2a2f2acc --line-uses-inside \
     --keyhl-color=8fbf8fff --bshl-color=c2564aff --separator-color=00000000 \
-    --insidever-color=0a0a0acc --ringver-color=b6e3a8ff --verif-color=b6e3a8ff --verif-text="CHECK" \
-    --insidewrong-color=0a0a0acc --ringwrong-color=c2564aff --wrong-color=c2564aff --wrong-text="NO" \
-    --noinput-text="" --modif-color=7d8079ff --verif-size=11 --wrong-size=11 \
-    --pass-media-keys --pass-volume-keys
+    --insidever-color=0a0a0acc --ringver-color=b6e3a8ff --verif-color=b6e3a8ff --verif-text="" --verif-size=16 \
+    --insidewrong-color=0a0a0acc --ringwrong-color=c2564aff --wrong-color=c2564aff --wrong-text="nope" --wrong-size=16 \
+    --noinput-text="" --modif-color=7d8079ff \
+    --keylayout 1 --layout-pos="ix:iy+104" --layout-align=0 \
+    --pass-media-keys --pass-volume-keys --pass-screen-keys
 fi
 exec i3lock -n -t -e -f -i "$img" -c 0a0a0a

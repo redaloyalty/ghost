@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# hog - what is eating this laptop, and do something about it.
+# Super+Shift+i, or click CPU / MEM on the bar. Lists apps (all their processes summed)
+# by memory, with CPU; pick one for actions.
+
+# live CPU per app: a 1 s sample from top (ps only gives a lifetime average)
+cpu_now() { top -b -n 2 -d 1 -w 512 | awk '/^top -/{f++} f==2 && $1 ~ /^[0-9]+$/ {c[$12]+=$9} END{for(a in c) printf "%s %.0f\n", a, c[a]}'; }
+
+top_apps() {
+  # app name, total MB, total CPU%, process count - grouped by command name
+  { cpu_now | sed 's/^/C /'; ps -eo comm=,rss= | sed 's/^/M /'; } | awk '
+    $1=="C" { c[$2]+=$3; next }
+    { n=$2; m[n]+=$3/1024; k[n]++ }
+    END { for (a in m) if (m[a] > 40 || c[a] > 5) printf "%d\t%.0f\t%d\t%s\n", m[a], c[a], k[a], a }' |
+    sort -rn | head -18
+}
+
+mem_line() { free -m | awk '/^Mem:/{printf "%.1f of %.1f GB used, %.1f GB free", ($2-$7)/1024, $2/1024, $7/1024}'; }
+
+menu() {
+  local rows pick app
+  rows=$(top_apps | awk -F'\t' '{printf "%6s MB  %4s%%  %-24s %s proc\n", $1, $2, $4, $3}')
+  pick=$(printf '%s\n' "$rows" | rofi -dmenu -i -p "hog" -mesg "$(mem_line)  ·  enter = actions" \
+          -theme-str 'window{width:640px;} listview{lines:14;}') || exit 0
+  app=$(echo "$pick" | awk '{print $4}')
+  [ -n "$app" ] && actions "$app"
+}
+
+actions() {
+  local app=$1 opts choice
+  opts="close its windows (asks to save)\nforce kill\nrestart"
+  case $app in
+    chrome) opts="open Chrome task manager (per tab)\n$opts" ;;
+    code)   opts="show VS Code extensions by memory\n$opts" ;;
+  esac
+  choice=$(printf "$opts\ncancel" | rofi -dmenu -i -p "$app" -mesg "$(ps -C "$app" -o rss= | awk '{s+=$1} END{printf "%d MB in %d processes", s/1024, NR}')" \
+            -theme-str 'window{width:520px;} listview{lines:6;}') || exit 0
+  case "$choice" in
+    "close its windows"*) i3-msg -q "[class=\"(?i)$app\"] kill"; notify-send -a hog "hog" "asked $app to close" ;;
+    "force kill")
+      [ "$(printf 'no\nyes, kill %s now' "$app" | rofi -dmenu -p "sure?" -mesg "unsaved work in $app is lost")" = "yes, kill $app now" ] &&
+        pkill -KILL -x "$app" && notify-send -a hog -u critical "hog" "killed $app" ;;
+    restart) restart "$app" ;;
+    "open Chrome task manager"*) i3-msg -q '[class="(?i)google-chrome"] focus'; sleep 0.3; xdotool key shift+Escape ;;
+    "show VS Code extensions"*) vscode_ext ;;
+  esac
+}
+
+restart() {
+  case $1 in
+    polybar) ~/dotfiles/polybar/launch.sh >/dev/null 2>&1 & ;;
+    picom)   ~/dotfiles/bin/compositor & ;;
+    dunst)   pkill -x dunst; setsid -f dunst ;;
+    code|chrome|obsidian|kitty)
+      # closes every window of the app (VS Code: Claude chats too) - confirm first
+      [ "$(printf 'no\nyes, restart %s' "$1" | rofi -dmenu -p "sure?" -mesg "all $1 windows close and reopen")" = "yes, restart $1" ] || return
+      pkill -TERM -x "$1"; sleep 2; setsid -f "$1" >/dev/null 2>&1 ;;
+    *) notify-send -a hog "hog" "no restart recipe for $1 - close it and open it again"; return ;;
+  esac
+  notify-send -a hog "hog" "restarted $1"
+}
+
+vscode_ext() {
+  ps -eo rss=,args= --sort=-rss | grep -E "/extensions/[a-z]" | grep -v grep |
+    awk '{for(i=2;i<=NF;i++) if ($i ~ /extensions\//) {e=$i; sub(/.*extensions\//,"",e); sub(/\/.*/,"",e); m[e]+=$1/1024; break}}
+         END{for(e in m) printf "%5d MB  %s\n", m[e], e}' | sort -rn |
+    rofi -dmenu -p "VS Code extensions" -mesg "disable the ones you don't need in this workspace (Extensions view, gear, Disable (Workspace))" \
+         -theme-str 'window{width:640px;} listview{lines:12;}' >/dev/null
+}
+
+case "$1" in
+  list) top_apps | awk -F'\t' '{printf "%6s MB  %4s%%  %s\n", $1, $2, $4}' ;;
+  *) menu ;;
+esac
