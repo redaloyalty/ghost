@@ -22,6 +22,8 @@ ln -sf "$here/gtk/settings.ini" ~/.config/gtk-3.0/settings.ini
 ln -sf "$here/gtk/settings.ini" ~/.config/gtk-4.0/settings.ini
 gsettings set org.gnome.desktop.interface gtk-theme Yaru-sage-dark 2>/dev/null || true
 gsettings set org.gnome.desktop.interface icon-theme Papirus-Dark 2>/dev/null || true
+gsettings set org.gnome.desktop.interface cursor-theme Bibata-Modern-Classic 2>/dev/null || true
+mkdir -p ~/.icons/default && printf '[Icon Theme]\nInherits=Bibata-Modern-Classic\n' > ~/.icons/default/index.theme
 
 chmod +x bin/* polybar/*.sh
 [ -f wallpaper/wall.png ] && [ ! -f wallpaper/lock.png ] && bin/make-lock || true
