@@ -1,13 +1,14 @@
 #!/bin/sh
 # Ghost lock: blurred wallpaper, clock + typing ring centred on the main screen,
 # keyboard layout (EN / Arabic) under the ring so the password goes in the right language.
+# No -e: Enter on an empty field runs the face check (howdy via PAM).
 # Uses i3lock-color (~/.local/bin/i3lock-color, built from ~/src/i3lock-color), else plain i3lock.
 img=~/dotfiles/wallpaper/lock.png
 if command -v i3lock-color >/dev/null; then
   # main screen = the primary monitor's index (0 when only the laptop screen is on)
   scr=$(xrandr --listmonitors | awk '/\*/{sub(":","",$1); print $1; exit}')
   F="JetBrainsMono Nerd Font"
-  exec i3lock-color -n -e -f -t -i "$img" -c 0a0a0aff -S "${scr:-0}" \
+  exec i3lock-color -n -f -t -i "$img" -c 0a0a0aff -S "${scr:-0}" \
     --clock --force-clock --time-str="%H:%M" --date-str="%A %d %B" \
     --time-font="$F" --date-font="$F" --greeter-font="$F" --verif-font="$F" --wrong-font="$F" --layout-font="$F" \
     --time-size=120 --date-size=20 --greeter-size=13 --layout-size=14 \
@@ -24,4 +25,4 @@ if command -v i3lock-color >/dev/null; then
     --keylayout 1 --layout-pos="ix:iy+104" --layout-align=0 \
     --pass-media-keys --pass-volume-keys --pass-screen-keys
 fi
-exec i3lock -n -t -e -f -i "$img" -c 0a0a0a
+exec i3lock -n -t -f -i "$img" -c 0a0a0a

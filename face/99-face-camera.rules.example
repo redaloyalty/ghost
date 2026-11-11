@@ -1,0 +1,6 @@
+# /dev/face = the camera Howdy uses. The monitor's camera wins while it is plugged in,
+# the laptop IR camera takes over when it is not.
+# Fill in your own ids: udevadm info -q property /dev/videoN | grep -E "VENDOR_ID|MODEL_ID|INTERFACE_NUM"
+# Copy to /etc/udev/rules.d/99-face-camera.rules, then: sudo udevadm control --reload && sudo udevadm trigger -s video4linux
+SUBSYSTEM=="video4linux", ENV{ID_VENDOR_ID}=="MONITOR_VENDOR", ENV{ID_MODEL_ID}=="MONITOR_MODEL", ENV{ID_USB_INTERFACE_NUM}=="00", ATTR{index}=="0", SYMLINK+="face", OPTIONS+="link_priority=20"
+SUBSYSTEM=="video4linux", ENV{ID_VENDOR_ID}=="LAPTOP_VENDOR", ENV{ID_MODEL_ID}=="LAPTOP_MODEL", ENV{ID_USB_INTERFACE_NUM}=="IR_INTERFACE", ATTR{index}=="0", SYMLINK+="face", OPTIONS+="link_priority=10"

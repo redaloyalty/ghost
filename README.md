@@ -15,6 +15,7 @@ My i3 setup on Ubuntu 24.04. Black and grey with one green accent, borrowed from
 | Launcher, window switcher, power menu | rofi |
 | Notifications | dunst: app icons, a colour per app, 4 at a time, Super + ` brings the last one back, do not disturb on Super + Ctrl + ` |
 | Lock screen | i3lock-color (falls back to i3lock): clock and a big ring centred on the main screen, green as you type, red when wrong, shows EN / Arabic so the password goes in the right layout |
+| Face unlock | Howdy on the lock screen, monitor camera when docked, laptop IR when not. See [face/](face/README.md) |
 | Tiling | autotiling: a new window splits the longer side, no thin slivers |
 | hog | `bin/hog`: what is eating the laptop, by memory and live CPU. Pick an app to close, kill or restart it. `hog-watch` warns when memory runs low |
 | Bar extras | mic and bluetooth menus, keyboard layout, everything clickable |
