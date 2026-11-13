@@ -1,9 +1,19 @@
 #!/bin/sh
-# shot        full screen (both screens)
+# shot        the screen you are on (the focused workspace's screen)
+# shot all    both screens
 # shot area   drag a box with the mouse
 d=~/Pictures/Screenshots; mkdir -p "$d"
 f="$d/$(date +%Y-%m-%d_%H-%M-%S).png"
-if [ "$1" = area ]; then import "$f"; else import -window root "$f"; fi
+case $1 in
+  area) import "$f" ;;
+  all)  import -window root "$f" ;;
+  *)    g=$(i3-msg -t get_workspaces | jq -r '.[] | select(.focused) | .rect | "\(.width)x\(.height)+\(.x)+\(.y)"')
+        o=$(xrandr --listactivemonitors | awk -v g="$g" 'NR>1 {split($3,a,"[x/+]"); r=a[1]"x"a[3]"+"a[5]"+"a[6]; print r}' | while read -r r; do
+              x=${r#*+}; x=${x%+*}; gx=${g#*+}; gx=${gx%+*}; w=${r%%x*}
+              [ "$gx" -ge "$x" ] && [ "$gx" -lt $((x + w)) ] && { echo "$r"; break; }
+            done)
+        import -window root -crop "${o:-$g}" +repage "$f" ;;
+esac
 [ -f "$f" ] || exit 0
 pkill -f "bin/clip-image" 2>/dev/null
 setsid ~/dotfiles/bin/clip-image "$f" >/dev/null 2>&1 < /dev/null &
