@@ -1,0 +1,96 @@
+diff --git a/i3lock.c b/i3lock.c
+index 8406fa6..1a5e98b 100644
+--- a/i3lock.c
++++ b/i3lock.c
+@@ -212,6 +212,8 @@ xcb_window_t win;
+ static xcb_cursor_t cursor;
+ #ifndef __OpenBSD__
+ static pam_handle_t *pam_handle;
++/* Face only: Enter on an empty field uses the i3lock-face PAM service, a typed password uses i3lock. */
++static pam_handle_t *face_handle;
+ static bool pam_cleanup;
+ #endif
+ int input_position = 0;
+@@ -581,7 +583,8 @@ static void input_done(void) {
+         return;
+     }
+ #else
+-    if (pam_authenticate(pam_handle, 0) == PAM_SUCCESS) {
++    pam_handle_t *auth_handle = (input_position == 0 && face_handle) ? face_handle : pam_handle;
++    if (pam_authenticate(auth_handle, 0) == PAM_SUCCESS) {
+         DEBUG("successfully authenticated\n");
+         clear_password_memory();
+ 
+@@ -589,7 +592,7 @@ static void input_done(void) {
+          * Related to credentials pam_end() needs to be called to cleanup any temporary
+          * credentials like kerberos /tmp/krb5cc_pam_* files which may of been left behind if the
+          * refresh of the credentials failed. */
+-        pam_setcred(pam_handle, PAM_REFRESH_CRED);
++        pam_setcred(auth_handle, PAM_REFRESH_CRED);
+         pam_cleanup = true;
+ 
+         ev_break(EV_DEFAULT, EVBREAK_ALL);
+@@ -2417,6 +2420,12 @@ int main(int argc, char *argv[]) {
+ 
+     if ((ret = pam_set_item(pam_handle, PAM_TTY, getenv("DISPLAY"))) != PAM_SUCCESS)
+         errx(EXIT_FAILURE, "PAM: %s", pam_strerror(pam_handle, ret));
++
++    if (access("/etc/pam.d/i3lock-face", F_OK) == 0 &&
++        pam_start("i3lock-face", username, &conv, &face_handle) == PAM_SUCCESS)
++        pam_set_item(face_handle, PAM_TTY, getenv("DISPLAY"));
++    else
++        face_handle = NULL;
+ #endif
+ 
+ /* Using mlock() as non-super-user seems only possible in Linux.
+diff --git a/unlock_indicator.c b/unlock_indicator.c
+index e10984a..b0eb54b 100644
+--- a/unlock_indicator.c
++++ b/unlock_indicator.c
+@@ -596,6 +596,27 @@ static void draw_indic(cairo_t *ctx, double ind_x, double ind_y) {
+             cairo_arc(ctx, ind_x, ind_y, BUTTON_RADIUS - 5, 0, 2 * M_PI);
+             cairo_stroke(ctx);
+         }
++        /* Face scan: while PAM verifies, a sweep circles the ring and a line moves through it. */
++        if (auth_state == STATE_AUTH_VERIFY) {
++            struct timespec now;
++            clock_gettime(CLOCK_MONOTONIC, &now);
++            double t = now.tv_sec + now.tv_nsec / 1e9;
++            double start = fmod(t * 2 * M_PI * 0.9, 2 * M_PI);
++            cairo_set_line_width(ctx, RING_WIDTH);
++            cairo_new_sub_path(ctx);
++            cairo_arc(ctx, ind_x, ind_y, BUTTON_RADIUS, start, start + M_PI / 2.5);
++            cairo_set_source_rgba(ctx, keyhl16.red, keyhl16.green, keyhl16.blue, keyhl16.alpha);
++            cairo_stroke(ctx);
++
++            double r = BUTTON_RADIUS - RING_WIDTH;
++            double dy = r * 0.8 * sin(t * M_PI * 1.2);
++            double half = sqrt(fmax(r * r - dy * dy, 0));
++            cairo_set_line_width(ctx, 2.0);
++            cairo_move_to(ctx, ind_x - half, ind_y + dy);
++            cairo_line_to(ctx, ind_x + half, ind_y + dy);
++            cairo_set_source_rgba(ctx, ringver16.red, ringver16.green, ringver16.blue, ringver16.alpha * 0.8);
++            cairo_stroke(ctx);
++        }
+         if (unlock_state == STATE_KEY_ACTIVE || unlock_state == STATE_BACKSPACE_ACTIVE) {
+             cairo_set_line_width(ctx, RING_WIDTH);
+             cairo_new_sub_path(ctx);
+@@ -1294,9 +1315,16 @@ void clear_indicator(void) {
+ 
+ void *start_time_redraw_tick_pthread(void *arg) {
+     struct timespec *ts = (struct timespec *)arg;
++    /* Tick every 40 ms so the face scan animates; otherwise redraw at the refresh rate. */
++    struct timespec fast = {0, 40000000};
++    double every = ts->tv_sec + ts->tv_nsec / 1e9, waited = 0;
+     while (1) {
+-        nanosleep(ts, NULL);
+-        redraw_screen();
++        nanosleep(&fast, NULL);
++        waited += 0.04;
++        if (auth_state == STATE_AUTH_VERIFY || waited >= every) {
++            redraw_screen();
++            waited = 0;
++        }
+     }
+     return NULL;
+ }

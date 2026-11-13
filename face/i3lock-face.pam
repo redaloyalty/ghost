@@ -1,0 +1,5 @@
+# Face only, used by the lock screen when Enter is pressed on an empty field.
+auth optional pam_exec.so quiet /usr/local/bin/linux-enable-ir-emitter run
+auth sufficient pam_howdy.so
+auth requisite pam_deny.so
+account include login

@@ -19,7 +19,7 @@ if command -v i3lock-color >/dev/null; then
     --ind-pos="x+w/2:y+h/2+150" --radius=70 --ring-width=7 --indicator \
     --inside-color=0a0a0a66 --ring-color=2a2f2acc --line-uses-inside \
     --keyhl-color=8fbf8fff --bshl-color=c2564aff --separator-color=00000000 \
-    --insidever-color=0a0a0acc --ringver-color=b6e3a8ff --verif-color=b6e3a8ff --verif-text="" --verif-size=16 \
+    --insidever-color=0a0a0acc --ringver-color=b6e3a8ff --verif-color=b6e3a8ff --verif-text="scanning" --verif-size=14 --redraw-thread \
     --insidewrong-color=0a0a0acc --ringwrong-color=c2564aff --wrong-color=c2564aff --wrong-text="nope" --wrong-size=16 \
     --noinput-text="" --modif-color=7d8079ff \
     --keylayout 1 --layout-pos="ix:iy+104" --layout-align=0 \

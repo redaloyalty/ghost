@@ -14,7 +14,7 @@ Steps that worked on Ubuntu 24.04:
 5. In `/usr/local/etc/howdy/config.ini`: `device_path = /dev/face`, `abort_if_lid_closed = false` (docked with the lid shut still uses the monitor camera).
 6. Add a face per camera: `sudo howdy -U $USER add`, once facing the laptop, once facing the monitor.
 7. Check: `sudo python3 /usr/local/lib/x86_64-linux-gnu/howdy/compare.py $USER; echo $?` - 0 is a match, 11 no match, 13 too dark.
-8. `/etc/pam.d/i3lock`: `auth sufficient pam_howdy.so` above `auth include login`. Keep a root shell open while testing.
+8. Face or password, never both: `/etc/pam.d/i3lock` stays password only, `i3lock-face.pam` goes to `/etc/pam.d/i3lock-face`. `i3lock-color-face.patch` (apply in an i3lock-color checkout, then rebuild) makes an empty Enter use the face service and a typed password use the normal one. The same patch draws a sweep and a scan line on the ring while the face check runs. Keep a root shell open while testing.
 
 `bin/lock` runs i3lock without `-e`, otherwise an empty Enter never reaches PAM and the face check never runs.
 
