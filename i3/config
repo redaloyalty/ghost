@@ -47,7 +47,7 @@ set $ws2 "2:WEB"
 set $ws3 "3:CODE"
 set $ws4 "4:NOTES"
 set $ws5 "5:MIND"
-set $ws6 "6"
+set $ws6 "6:APPS"
 set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
@@ -70,9 +70,11 @@ workspace $ws8 gaps top 4
 workspace $ws9 gaps top 4
 workspace $ws10 gaps top 4
 
-# chat apps first (more specific), they live on the laptop screen
+# web apps (chat, mail, music) first, more specific than the browser rule; they live on APPS, laptop screen
 assign [instance="web.whatsapp.com"] $ws6
 assign [instance="teams.microsoft.com"] $ws6
+assign [instance="^outlook\."] $ws6
+assign [instance="^soundcloud\.com"] $ws6
 assign [class="(?i)google-chrome|firefox|brave"] $ws2
 assign [class="(?i)code"] $ws3
 for_window [class="mind-float"] floating enable, resize set 900 600, move position center
@@ -94,6 +96,8 @@ bindsym $mod+Shift+b exec firefox
 bindsym $mod+g exec --no-startup-id sh -c 'command -v repo-pick >/dev/null && exec repo-pick'
 bindsym $mod+Shift+w exec google-chrome --app=https://web.whatsapp.com
 bindsym $mod+Shift+t exec google-chrome --app=https://teams.microsoft.com
+bindsym $mod+Shift+m exec google-chrome --app=https://outlook.cloud.microsoft/mail/
+bindsym $mod+Shift+u exec google-chrome --app=https://soundcloud.com
 bindsym $mod+c exec code
 bindsym $mod+o exec obsidian
 bindsym $mod+a exec kitty --directory ~/ll --title claude -e claude
@@ -208,6 +212,7 @@ bindsym $mod+Shift+e exec ~/dotfiles/bin/power
 
 # screenshots -> ~/Pictures/Screenshots
 bindsym Print exec --no-startup-id ~/dotfiles/bin/shot
+bindsym Ctrl+Print exec --no-startup-id ~/dotfiles/bin/shot all
 bindsym --release Shift+Print exec --no-startup-id ~/dotfiles/bin/shot area
 bindsym --release $mod+Shift+s exec --no-startup-id ~/dotfiles/bin/shot area
 

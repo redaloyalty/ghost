@@ -12,8 +12,10 @@ OPEN THINGS
   Super + e              ranger (files in terminal)
   Super + n              Files (normal file manager)
   Super + g              repos: Enter VS Code, Alt+t terminal, Alt+g GitHub
-  Super + Shift + w      WhatsApp (laptop screen, workspace 6)
-  Super + Shift + t      Teams (laptop screen, workspace 6)
+  Super + Shift + w      WhatsApp     (all four open on APPS, laptop screen)
+  Super + Shift + t      Teams
+  Super + Shift + m      Outlook mail
+  Super + Shift + u      SoundCloud
 
 MIND (the laptop LLM)
   Super + Space          ask mind one question
@@ -55,10 +57,11 @@ WORKSPACES
   Super + 6..0           laptop screen
   Super + Shift + 1..0   send window to workspace
   Super + ,              send the whole workspace to the other screen
-  Chrome goes to 2, VS Code to 3, WhatsApp + Teams to 6 by itself; Obsidian opens where you are
+  Chrome goes to 2, VS Code to 3, WhatsApp, Teams, Outlook, SoundCloud to 6 APPS by itself; Obsidian opens where you are
 
 SCREENSHOTS  (saved in ~/Pictures/Screenshots)
-  Print                  whole screen (both screens)
+  Print                  the screen you are on
+  Ctrl + Print           both screens
   Shift + Print          drag a box
   Super + Shift + s      drag a box
 
